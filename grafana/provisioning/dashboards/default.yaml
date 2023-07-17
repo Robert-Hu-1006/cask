@@ -1,0 +1,12 @@
+apiVersion: 1
+
+providers:
+  - name: Default # A uniquely identifiable name for the provider
+#   orgId: 1
+#   folder: ''
+#   folderUid: ''
+    type: file
+    options:
+      # Docker Path
+      path: /etc/grafana/provisioning/dashboards
+      #path: /opt/homebrew/Cellar/grafana/9.4.7/share/grafana/conf/provisioning/dashboards

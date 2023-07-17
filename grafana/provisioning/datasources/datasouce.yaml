@@ -1,0 +1,46 @@
+apiVersion: 1
+datasources:
+  - id: 1
+    uid: "DzEWAes4k"
+    orgId: 1
+    name: "Infinity"
+    type: "yesoreyeram-infinity-datasource"
+    url: ""
+    basicAuth: false
+    basicAuthUser: ""
+    isDefault: true
+    jsonData:
+      allowedHosts:
+        - "http://wisdomgather.synology.me:8088"
+      auth_method: "bearerToken"
+      global_queries: []
+      oauthPassThru: false
+    readOnly: false
+    secureJsonData:
+      bearerToken: "xxxxxxx"
+
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    # <int> org id. will default to orgId 1 if not specified
+    orgId: 1
+    url: http://prometheus:9090
+    #password: <string>
+    #user: <string>
+    #database: <string>
+    #basicAuth: true
+    #basicAuthUser: admin
+    # <string> basic auth password
+    basicAuthPassword: foobar
+    # <bool> enable/disable with credentials headers
+    withCredentials:
+    # <bool> mark as default datasource. Max one per org
+    isDefault:
+    # <map> fields that will be converted to json and stored in json_data
+    jsonData:
+      graphiteVersion: "1.1"
+      tlsAuth: false
+      tlsAuthWithCACert: false
+    version: 1
+    # <bool> allow users to edit datasources from the UI.
+    editable: true
