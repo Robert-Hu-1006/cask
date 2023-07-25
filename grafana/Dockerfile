@@ -1,4 +1,4 @@
-FROM grafana/grafana:10.0.1
+FROM grafana/grafana:10.0.2
 
 ##################################################################
 ## CONFIGURATION
@@ -25,7 +25,7 @@ ENV GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboar
 ## Paths
 ENV GF_PATHS_PROVISIONING="/etc/grafana/provisioning"
 ENV GF_PATHS_PLUGINS="/var/lib/grafana/plugins"
-
+#ENV GF_PATHS_PLUGINS="/usr/share/grafana/public/app/plugins"
 ##################################################################
 ## COPY ARTIFACTS
 ## Required for the App plugin
@@ -83,10 +83,10 @@ RUN sed -i "s|window.grafanaBootData = {| \
     /usr/share/grafana/public/views/index.html
 
 ## Update Title
-RUN find /usr/share/grafana/public/build/ -name *.js -exec sed -i 's|AppTitle="Grafana"|AppTitle="Volkov Labs"|g' {} \;
+RUN find /usr/share/grafana/public/build/ -name *.js -exec sed -i 's|AppTitle="Grafana"|AppTitle="WGC cask"|g' {} \;
 
 ## Update Login Title
-RUN find /usr/share/grafana/public/build/ -name *.js -exec sed -i 's|LoginTitle="Welcome to Grafana"|LoginTitle="Welcome to Volkov Labs"|g' {} \;
+RUN find /usr/share/grafana/public/build/ -name *.js -exec sed -i 's|LoginTitle="Welcome to Grafana"|LoginTitle="Welcome to WGC cask"|g' {} \;
 
 ## Remove Documentation, Support, Community in the Footer
 RUN find /usr/share/grafana/public/build/ -name *.js -exec sed -i 's|\[{target:"_blank",id:"documentation".*grafana_footer"}\]|\[\]|g' {} \;
@@ -108,8 +108,8 @@ RUN find /usr/share/grafana/public/build/ -name *.js -exec sed -i 's|..createEle
 ##################################################################
 
 ## Time series databases / Elasticsearch
-RUN rm -rf /usr/share/grafana/public/app/plugins/datasource/elasticsearch
-RUN rm -rf /usr/share/grafana/public/build/elasticsearch*
+#RUN rm -rf /usr/share/grafana/public/app/plugins/datasource/elasticsearch
+#RUN rm -rf /usr/share/grafana/public/build/elasticsearch*
 
 ## Time series databases / Graphite
 RUN rm -rf /usr/share/grafana/public/app/plugins/datasource/graphite
@@ -194,6 +194,9 @@ RUN rm -rf /usr/share/grafana/public/app/plugins/panel/table-old
 RUN rm -rf /usr/share/grafana/public/app/plugins/panel/traces
 
 ##################################################################
+
+RUN grafana cli plugins install yesoreyeram-infinity-datasource
+RUN grafana cli plugins install grafana-googlesheets-datasource
 
 USER grafana
 

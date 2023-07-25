@@ -1,0 +1,42 @@
+groups:
+  - name: network-err
+    rules:
+      - alert: nebula_event
+        expr: Nebula_Body_Gauge > 0
+        for: 1s
+        labels:
+          severity: high   
+          annotations: 
+          description: nebula-m send body event {{ $value }}
+
+      - alert: nebula_face_identify
+        expr: Nebula_Face_Gauge > 0
+        for: 1s
+        labels:
+          severity: high   
+          annotations: 
+          description: nebula-m send face picture and type {{ $value }}
+      
+      - alert: drop_frame
+        expr: ping_maximum_response_ms > ping_average_response_ms * 2
+        for: 20s
+        labels:
+          severity: high   
+          annotations:
+          description: camera {{ $labels.url }} drop frame has reached {{ $value }}%
+
+      - alert: sensor_alarm
+        expr: mqtt_consumer_L1_ZoneC_DisableToliet_PanicAlarm == 1
+        for: 0s
+        labels:
+          severity: critical
+          description: IO module {{ $labels.url }} return data {{ $value }}
+          runbook_url: rtsp://root:Az123567!@172.16.1.14/axis-media/media.amp?profile=profile_1_h264
+
+      - alert: packet_loss
+        expr: ping_percent_packet_loss > 0
+        for: 30s
+        labels:
+          severity: critical
+          description: node {{ $labels.url }} packert loss
+    

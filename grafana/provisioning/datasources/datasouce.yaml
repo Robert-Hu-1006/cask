@@ -44,3 +44,13 @@ datasources:
     version: 1
     # <bool> allow users to edit datasources from the UI.
     editable: true
+  
+  - name: "Google Sheets"
+    type: "grafana-googlesheets-datasource"
+    enabled: true
+    jsonData:
+      authenticationType: "key"
+    secureJsonData:
+      apiKey: "AIzaSyBHm9It2TjAWIN5RSVnXqFtWMJqXNu6QfA"
+    version: 1
+    editable: true
