@@ -493,3 +493,20 @@ See the following Wiki pages:
 [ls-docker]: https://www.elastic.co/guide/en/logstash/current/docker-config.html
 
 [upgrade]: https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-upgrade.html
+
+
+Note by Robert:
+## elasticsearch test command:
+curl -XPOST -D- 'http://localhost:5601/api/saved_objects/index-pattern' \
+    -H 'Content-Type: application/json' \
+    -H 'kbn-version: 8.8.2' \
+    -u elastic:Az123567! \
+    -d '{"attributes":{"title":"logstash-*","timeFieldName":"@timestamp"}}'
+
+docker run --log-driver=syslog --log-opt syslog-address=tcp://0.0.0.0:50000 --log-opt syslog-facility=daemon alpine echo hello world tcp
+
+docker run --log-driver=gelf --log-opt gelf-address=udp://0.0.0.0:50000 alpine echo hello world udp
+
+## install log tool
+brew install filebeat
+location : /opt/homebrew/etc/filebeat

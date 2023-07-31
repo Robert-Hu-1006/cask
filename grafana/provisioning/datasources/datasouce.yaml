@@ -54,3 +54,12 @@ datasources:
       apiKey: "AIzaSyBHm9It2TjAWIN5RSVnXqFtWMJqXNu6QfA"
     version: 1
     editable: true
+  
+  - name: Elastic
+    type: elasticsearch
+    access: proxy
+    url: http://elasticsearch:9200
+    jsonData:
+      index: '[metrics-]YYYY.MM.DD'
+      interval: Daily
+      timeField: '@timestamp'

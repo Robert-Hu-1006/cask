@@ -1,6 +1,55 @@
 version: '3.7'
 
 services:
+  prometheus:
+    image: prom/prometheus:latest
+    restart: always
+    container_name: prometheus
+    hostname: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/rules/alert_rules.yml:/etc/prometheus/rules/alert_rules.yml
+    command: --config.file=/etc/prometheus/prometheus.yml
+    environment:
+      TZ: 'Asia/Taipei'
+
+  telegraf:
+    image: telegraf:1.27.2
+    restart: always
+    container_name: telegraf
+    hostname: telegraf
+    ports:
+      - 9273:9273
+    volumes:
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
+      - ./telegraf/elastic/:/etc/telegraf/elastic/
+    command: telegraf --config /etc/telegraf/telegraf.conf --config-directory /etc/telegraf/elastic/
+    
+  grafana:
+    container_name: grafana
+    hostname: grafana
+    build:
+      context: ./grafana
+      dockerfile: Dockerfile
+    image: cask-grafana:1.0.0
+    #restart: unless-stopped
+    restart: always
+    entrypoint: /run.sh
+    depends_on:
+      - elasticsearch
+    ports:
+      - 3000:3000
+    environment:
+      #- ELASTICSEARCH_HOSTS=["http://es_node_01:9200", "http://es_node_02:9200", "http://es_node_03:9200"]
+      - GF_DEFAULT_APP_MODE=development
+    
+    volumes:
+      - grafana_data:/var/lib/grafana
+      #- ./grafana/dist:/var/lib/grafana/plugins/volkovlabs-app
+      - ./grafana//provisioning:/etc/grafana/provisioning
+      - ./grafana/icon/:/usr/share/grafana/public/img/icon
   setup:
     profiles:
       - setup
@@ -22,8 +71,8 @@ services:
       HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
       MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
       BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
-    networks:
-      - elk
+    #networks:
+    #  - elk
     depends_on:
       - elasticsearch
 
@@ -32,6 +81,7 @@ services:
       context: elasticsearch/
       args:
         ELASTIC_VERSION: ${ELASTIC_VERSION}
+    hostname: elasticsearch
     volumes:
       - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
       - elasticsearch:/usr/share/elasticsearch/data:Z
@@ -43,8 +93,8 @@ services:
       ES_JAVA_OPTS: -Xms512m -Xmx512m
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
       discovery.type: single-node
-    networks:
-      - elk
+    #networks:
+    #  - elk
     restart: unless-stopped
 
   logstash:
@@ -52,6 +102,7 @@ services:
       context: logstash/
       args:
         ELASTIC_VERSION: ${ELASTIC_VERSION}
+    hostname: logstash
     volumes:
       - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
@@ -65,8 +116,8 @@ services:
     environment:
       LS_JAVA_OPTS: -Xms256m -Xmx256m
       LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
-    networks:
-      - elk
+    #networks:
+    #  - elk
     depends_on:
       - elasticsearch
     restart: unless-stopped
@@ -76,21 +127,23 @@ services:
       context: kibana/
       args:
         ELASTIC_VERSION: ${ELASTIC_VERSION}
+    hostname: kibana
     volumes:
       - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
     ports:
       - 5601:5601
     environment:
       KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
-    networks:
-      - elk
+#    networks:
+#      - elk
     depends_on:
       - elasticsearch
     restart: unless-stopped
 
-networks:
-  elk:
-    driver: bridge
+#networks:
+#  elk:
+#   driver: bridge
 
 volumes:
   elasticsearch:
+  grafana_data: {}
